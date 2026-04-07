@@ -1,0 +1,44 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+root {
+  --background: #FFFFFF;
+  --foreground: #222222;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-nyayak-slate: #34373E;
+  --color-nyayak-orange: #C09765;
+  --color-nyayak-dark: #222222;
+  --color-nyayak-white: #FFFFFF;
+
+  --animate-marquee: marquee 25s linear infinite;
+  
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #FFFFFF;
+    --foreground: #222222;
+  }
+}
+
+body {
+  background: #FFFFFF;
+  color: #222222;
+  font-family: "Armin Grotesk", var(--font-space-grotesk), "Space Grotesk", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}

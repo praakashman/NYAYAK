@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+    <!-- System Boundary -->
+    <rect x="250" y="50" width="500" height="500" fill="#f8fafc" stroke="#3b82f6" stroke-width="2" rx="10"/>
+    <text x="500" y="80" font-family="Arial" font-size="20" font-weight="bold" text-anchor="middle" fill="#1e293b">Nyayak System</text>
+
+    <!-- Citizen Actor -->
+    <circle cx="100" cy="200" r="15" fill="none" stroke="#0f172a" stroke-width="2"/>
+    <line x1="100" y1="215" x2="100" y2="260" stroke="#0f172a" stroke-width="2"/> <!-- Body -->
+    <line x1="80" y1="240" x2="120" y2="240" stroke="#0f172a" stroke-width="2"/> <!-- Arms -->
+    <line x1="100" y1="260" x2="80" y2="300" stroke="#0f172a" stroke-width="2"/> <!-- Leg Left -->
+    <line x1="100" y1="260" x2="120" y2="300" stroke="#0f172a" stroke-width="2"/> <!-- Leg Right -->
+    <text x="100" y="325" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold" fill="#0f172a">Citizen</text>
+
+    <!-- Lawyer Actor -->
+    <circle cx="100" cy="400" r="15" fill="none" stroke="#0f172a" stroke-width="2"/>
+    <line x1="100" y1="415" x2="100" y2="460" stroke="#0f172a" stroke-width="2"/> <!-- Body -->
+    <line x1="80" y1="440" x2="120" y2="440" stroke="#0f172a" stroke-width="2"/> <!-- Arms -->
+    <line x1="100" y1="460" x2="80" y2="500" stroke="#0f172a" stroke-width="2"/> <!-- Leg Left -->
+    <line x1="100" y1="460" x2="120" y2="500" stroke="#0f172a" stroke-width="2"/> <!-- Leg Right -->
+    <text x="100" y="525" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold" fill="#0f172a">Lawyer</text>
+
+    <!-- Use Cases -->
+    <!-- Ask Legal Question -->
+    <ellipse cx="400" cy="140" rx="90" ry="30" fill="#e0f2fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="400" y="145" font-family="Arial" font-size="14" text-anchor="middle" fill="#1e3a8a">Ask Legal Question</text>
+
+    <!-- Search Lawyer -->
+    <ellipse cx="620" cy="140" rx="90" ry="30" fill="#e0f2fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="620" y="145" font-family="Arial" font-size="14" text-anchor="middle" fill="#1e3a8a">Search Lawyer</text>
+
+    <!-- Get Court Guidance -->
+    <ellipse cx="400" cy="240" rx="90" ry="30" fill="#e0f2fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="400" y="245" font-family="Arial" font-size="14" text-anchor="middle" fill="#1e3a8a">Get Court Guidance</text>
+
+    <!-- Book Consultation -->
+    <ellipse cx="620" cy="240" rx="90" ry="30" fill="#e0f2fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="620" y="245" font-family="Arial" font-size="14" text-anchor="middle" fill="#1e3a8a">Book Consultation</text>
+
+    <!-- Post/Reply in Forum -->
+    <ellipse cx="510" cy="340" rx="90" ry="30" fill="#e0f2fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="510" y="345" font-family="Arial" font-size="14" text-anchor="middle" fill="#1e3a8a">Post/Reply in Forum</text>
+
+    <!-- Browse Case Repository -->
+    <ellipse cx="400" cy="440" rx="100" ry="30" fill="#e0f2fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="400" y="445" font-family="Arial" font-size="14" text-anchor="middle" fill="#1e3a8a">Browse Case Repo</text>
+
+    <!-- Manage Profile -->
+    <ellipse cx="620" cy="440" rx="90" ry="30" fill="#e0f2fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="620" y="445" font-family="Arial" font-size="14" text-anchor="middle" fill="#1e3a8a">Manage Profile</text>
+
+    <!-- Connections for Citizen -->
+    <line x1="130" y1="210" x2="310" y2="140" stroke="#64748b" stroke-width="2" /> <!-- Ask Legal Question -->
+    <line x1="130" y1="220" x2="530" y2="140" stroke="#64748b" stroke-width="2" /> <!-- Search Lawyer -->
+    <line x1="130" y1="230" x2="310" y2="240" stroke="#64748b" stroke-width="2" /> <!-- Get Court Guidance -->
+    <line x1="130" y1="240" x2="530" y2="240" stroke="#64748b" stroke-width="2" /> <!-- Book Consultation -->
+    <line x1="130" y1="250" x2="420" y2="340" stroke="#64748b" stroke-width="2" /> <!-- Forum -->
+
+    <!-- Connections for Lawyer -->
+    <line x1="130" y1="450" x2="530" y2="440" stroke="#64748b" stroke-width="2" /> <!-- Manage Profile -->
+    <line x1="130" y1="440" x2="300" y2="440" stroke="#64748b" stroke-width="2" /> <!-- Case Repo -->
+    <line x1="130" y1="430" x2="420" y2="340" stroke="#64748b" stroke-width="2" /> <!-- Forum -->
+    <line x1="130" y1="410" x2="530" y2="240" stroke="#64748b" stroke-width="2" /> <!-- Book Consultation (Receive) -->
+    
+</svg>
