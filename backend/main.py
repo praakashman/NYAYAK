@@ -1,6 +1,6 @@
 import os
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from groq import Groq
@@ -8,6 +8,99 @@ from groq import Groq
 from models import LegalQuery, LegalResponse, Source
 from rag_pipeline import RAGPipeline, load_constitution_pdf
 from lawyers_db import find_best_lawyer
+
+
+def _is_placeholder_or_invalid_key(value: str | None) -> bool:
+    return not value or value.startswith("your_")
+
+
+def _build_llm_client():
+    """Prefer Gemini when available, then fall back to Groq."""
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    if not _is_placeholder_or_invalid_key(gemini_api_key):
+        try:
+            from langchain_google_genai import ChatGoogleGenerativeAI
+
+            logger.info("✓ Gemini client initialized")
+            return {
+                "provider": "gemini",
+                "client": ChatGoogleGenerativeAI,
+                "api_key": gemini_api_key,
+            }
+        except Exception as e:
+            logger.warning(f"⚠ Could not initialize Gemini: {e}")
+
+    groq_api_key = os.getenv("GROQ_API_KEY")
+    if not _is_placeholder_or_invalid_key(groq_api_key):
+        try:
+            logger.info("✓ Groq client initialized")
+            return {
+                "provider": "groq",
+                "client": Groq(api_key=groq_api_key),
+            }
+        except Exception as e:
+            logger.warning(f"⚠ Could not initialize Groq: {e}")
+
+    logger.warning("⚠ No LLM provider configured - using mock responses")
+    return {"provider": None, "client": None}
+
+
+def _gemini_model_candidates() -> list[str]:
+    preferred_model = os.getenv("GEMINI_MODEL")
+    candidates = [
+        preferred_model,
+        "gemini-3.6-flash",
+        "gemini-flash-latest",
+        "gemini-3.5-flash",
+        "gemini-2.0-flash",
+    ]
+    return [candidate for candidate in candidates if candidate]
+
+
+def _coerce_llm_text(content) -> str:
+    if isinstance(content, str):
+        return content
+
+    if isinstance(content, list):
+        parts = []
+        for item in content:
+            if isinstance(item, str):
+                parts.append(item)
+            elif isinstance(item, dict):
+                text = item.get("text")
+                if text:
+                    parts.append(str(text))
+            else:
+                text = getattr(item, "text", None)
+                if text:
+                    parts.append(str(text))
+        return "".join(parts).strip()
+
+    text = getattr(content, "text", None)
+    if text:
+        return str(text)
+
+    return str(content)
+
+
+def build_rag_fallback_answer(query: str, relevant_docs: list) -> str:
+    """Return a useful answer from retrieved context when LLM generation is unavailable."""
+    if not relevant_docs:
+        return (
+            "I could not retrieve enough constitutional context to answer this question confidently right now. "
+            "Please try again with more specific terms (for example: fundamental rights, property, marriage, bail)."
+        )
+
+    top_doc = relevant_docs[0]
+    source_detail = top_doc["metadata"].get("source_detail", f"Page {top_doc['metadata'].get('page', 'Unknown')}")
+    snippet = top_doc["content"].strip().replace("\n", " ")[:500]
+
+    return (
+        f"Based on the constitutional references available, here is the closest match for your question: \"{query}\".\n\n"
+        f"Relevant provision: {source_detail}\n"
+        f"Excerpt: {snippet}...\n\n"
+        "Note: AI text generation is temporarily unavailable, so this response is derived directly from retrieved legal text."
+    )
 
 # Load environment variables
 load_dotenv()
@@ -41,18 +134,9 @@ except Exception as e:
     logger.error(f"Error initializing RAG pipeline: {e}")
     rag_pipeline = None
 
-# Initialize Groq client
-try:
-    groq_api_key = os.getenv("GROQ_API_KEY")
-    if groq_api_key and groq_api_key != "your_groq_api_key_here":
-        groq_client = Groq(api_key=groq_api_key)
-        logger.info("✓ Groq client initialized")
-    else:
-        groq_client = None
-        logger.warning("⚠ Groq API key not configured - using mock responses")
-except Exception as e:
-    logger.warning(f"⚠ Could not initialize Groq: {e} - using mock responses")
-    groq_client = None
+llm_runtime = _build_llm_client()
+llm_provider = llm_runtime["provider"]
+llm_client = llm_runtime["client"]
 
 
 @app.get("/health")
@@ -61,7 +145,8 @@ async def health_check():
     return {
         "status": "healthy",
         "rag_initialized": rag_pipeline is not None and rag_pipeline.documents_loaded,
-        "groq_configured": groq_client is not None
+        "llm_provider": llm_provider,
+        "llm_configured": llm_client is not None
     }
 
 
@@ -79,7 +164,7 @@ async def ask_legal(request: LegalQuery):
         query = request.query
         
         if not query:
-            return {"error": "Query is required"}, 400
+            raise HTTPException(status_code=400, detail="Query is required")
         
         # Get relevant documents from RAG
         if not rag_pipeline or not rag_pipeline.documents_loaded:
@@ -103,37 +188,59 @@ async def ask_legal(request: LegalQuery):
         
         context = "\n\n---\n\n".join(context_parts)
         
-        # Generate response with Groq
-        try:
-            system_prompt = """You are a legal expert on the Nepal Constitution. 
+        # Generate response with the configured LLM, falling back to retrieved context if unavailable.
+        if llm_client is None:
+            answer = build_rag_fallback_answer(query, relevant_docs)
+        else:
+            try:
+                system_prompt = """You are a legal expert on the Nepal Constitution. 
 Answer all questions based on the Constitution excerpts provided.
 ALWAYS cite the specific Dhara (Article) and Upadhara (Section).
 Format citations as: [Dhara X, Upadhara Y] or [Article X, Section Y, Page Z]
 Include all relevant citations at the end of your response.
 Be precise and reference the exact constitutional provisions.
 Provide clear, authoritative legal information."""
-            
-            completion = groq_client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": system_prompt
-                    },
-                    {
-                        "role": "user",
-                        "content": f"Constitution Context:\n{context}\n\nQuestion: {query}"
-                    }
-                ],
-                temperature=0.5,
-                max_completion_tokens=1024,
-                top_p=1
-            )
-            answer = completion.choices[0].message.content
-        except Exception as e:
-            logger.error(f"Groq API error: {e}")
-            # Return error message - no mock fallback
-            answer = f"Unable to process request at this time: {str(e)}"
+
+                if llm_provider == "gemini":
+                    prompt_text = f"{system_prompt}\n\nConstitution Context:\n{context}\n\nQuestion: {query}"
+                    last_error = None
+
+                    for model_name in _gemini_model_candidates():
+                        try:
+                            gemini_client = llm_client(
+                                model=model_name,
+                                google_api_key=os.getenv("GEMINI_API_KEY"),
+                                temperature=0.5,
+                            )
+                            completion = gemini_client.invoke(prompt_text)
+                            answer = _coerce_llm_text(completion.content)
+                            break
+                        except Exception as e:
+                            last_error = e
+                            logger.warning(f"⚠ Gemini model {model_name} failed: {e}")
+                    else:
+                        raise last_error if last_error else RuntimeError("Gemini generation failed")
+                else:
+                    completion = llm_client.chat.completions.create(
+                        model="llama-3.3-70b-versatile",
+                        messages=[
+                            {
+                                "role": "system",
+                                "content": system_prompt
+                            },
+                            {
+                                "role": "user",
+                                "content": f"Constitution Context:\n{context}\n\nQuestion: {query}"
+                            }
+                        ],
+                        temperature=0.5,
+                        max_completion_tokens=1024,
+                        top_p=1
+                    )
+                    answer = completion.choices[0].message.content
+            except Exception as e:
+                logger.error(f"LLM API error: {e}")
+                answer = build_rag_fallback_answer(query, relevant_docs)
         
         # Detect legal field from query
         legal_field = detect_legal_field(query)
@@ -160,12 +267,7 @@ Provide clear, authoritative legal information."""
     
     except Exception as e:
         logger.error(f"Error processing legal query: {e}")
-        return LegalResponse(
-            answer=f"Error: {str(e)}",
-            sources=[],
-            recommended_lawyer=None,
-            field="Constitutional Law"
-        )
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/api/lawyers")
@@ -189,7 +291,7 @@ async def get_lawyers(specialization: str = None):
     
     except Exception as e:
         logger.error(f"Error fetching lawyers: {e}")
-        return {"error": str(e)}, 500
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 def detect_legal_field(query: str) -> str:
@@ -214,5 +316,6 @@ def detect_legal_field(query: str) -> str:
 
 if __name__ == "__main__":
     import uvicorn
+    host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run(app, host=host, port=port)

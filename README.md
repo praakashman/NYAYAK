@@ -1,90 +1,132 @@
 # Nyayak
-Digital legal navigation system designed for Nepal.
 
+Nyayak is a digital legal navigation platform built for Nepal. It combines AI-powered legal guidance, lawyer discovery, and legal resource exploration into a single experience for citizens and legal professionals.
 
+## Overview
 
+The platform helps users:
+- ask legal questions in natural language and receive grounded answers
+- explore constitutional and legal references with citations
+- discover lawyers by specialization and availability
+- access court-related information and legal resources
 
-# algorithms used:
-1. content-based recommendation using bag-of-words text normalization, stop-word removal, exact category matching (weighted scoring), and term-frequency-based ranking with explainable outputs.
-example: input “land dispute issue” → bag-of-words → [land, dispute] → category match “property law” (+20 score) + term frequency in bio (e.g., “land” appears 3 times → +6 score) → final ranked lawyer with explanation “matched specialization + keyword relevance.”
+Nyayak is designed to make legal information more accessible, especially in a setting where many people face high consultation costs and limited access to trusted legal guidance.
 
-3. graph-based forum system using pagerank-style scoring for influential users and dfs traversal for hierarchical thread reconstruction with realtime interactions.
+## Key Features
 
-example: user gets replies (+2 edges) and upvotes (+3 edges) → higher pagerank score → shown as top creator; fetching comments → build parent-child graph → dfs traversal → returns ordered nested replies in chronological flow.
+- AI legal assistant powered by a Retrieval-Augmented Generation (RAG) pipeline
+- Legal query handling with source-backed responses
+- Lawyer directory with specialization-based discovery
+- Clerk-based authentication and user management
+- Real-time data and chat workflows powered by Convex
+- Modern web interface built with Next.js and Tailwind CSS
 
-4. courts (map insert garera graph based representation haldine) i don't know what algorithm to used 
+## Tech Stack
 
-1. RAG Pipeline (BM25 + Cosine Similarity)
-Current Location: backend/rag_pipeline.py lines 32-57
-User asks (Can my land dispute be solved?)
-BM25 searches for keyword matches in Constitution (70% relevance)
-Semantic embeddings find contextually similar articles (30% relevance)
-Combined score ranks the top 3 most relevant constitutional articles
-Response sent via src/app/api/ask-legal/route.ts → ChatInterface displays it
+### Frontend
+- Next.js
+- React
+- Tailwind CSS
 
-2. Lawyer Ranking Algorithm
-Current Location: convex/lawyers.ts lines 42-46
-When user views /lawyers page
-System ranks lawyers by: (1) Availability status, (2) Rating score
-LawyerDirectory.tsx displays sorted list
-Issue: No matching between user query + lawyer expertise (this is your gap!)
+### Backend
+- FastAPI
+- Python
+- LangChain
+- Chroma-based document retrieval
 
-3. Text Classification (Legal Field Detection)
-Current Location: backend/main.py lines 201-208
-User query arrives → system identifies if it's "Family Law", "Criminal Law", etc.
-Keyword matching: "विवाह" → Family Law, "मृत्यु" → Criminal Law
-Used to tag the query but NOT used to recommend lawyers
+### AI / Search
+- BM25-based retrieval
+- Gemini / Groq integration for answer generation
 
+### Data & Auth
+- Convex
+- Clerk
 
-4. Database Indexing
-Current Location: convex/schema.ts lines 13-40
-by_clerkId index: Fast user lookup when they sign in
-by_userId index: Quick retrieval of lawyer's current cases
-by_lawyer_status index: Filter available lawyers quickly
-These indexes make queries O(log n) instead of O(n)
+## Project Structure
 
+- frontend application: src/
+- API routes: src/app/api/
+- Python backend: backend/
+- real-time and data models: convex/
+- documentation: docs/
 
-5. HMAC-SHA256 & JWT
-Current Location: convex/http.ts, convex/auth.config.js
-Clerk webhook arrives → HMAC signature verified
-New user signs up → JWT token generated
-Protects against fake webhook attacks
+## Getting Started
 
+### Prerequisites
+- Node.js 20+
+- Python 3.11+
+- npm
 
+### 1. Clone the repository
 
+```bash
+git clone https://github.com/paudelsamir/nyayak.git
+cd nyayak
+```
 
-Problem & Users
-Primary Users (Citizens): Individuals facing legal uncertainties who find the justice system complex, expensive, or inaccessible.
-Secondary Users (Legal Professionals): Practicing lawyers, law firms, and independent advocates looking to expand their clientele and streamline their case discovery process.
-Pain Points:
-For Citizens (Access Gap): Legal consultations are often prohibitively expensive and finding a trustworthy specialist is difficult due to information opacity.
-For Lawyers (Market Inefficiency): There is no centralized digital platform for lawyers to showcase expertise or find cases that match their specialization, leading to underutilization of talent.
-Systemic Issues: With 150,000+ pending cases in Nepal, the lack of digital tools contributes to massive delays and administrative bottlenecks.
-Success Metric: Empowering citizens with instant legal clarity and representation while providing lawyers with a consistent stream of relevant cases.
-Solution
+### 2. Install frontend dependencies
 
-Nyayak provides a comprehensive three-layer solution:
-AI Legal Assistant: Uses RAG (Retrieval-Augmented Generation) to give accurate, cited answers from the Nepali Constitution and legal documents with history saved
-Lawyer Marketplace: A verified directory where users can book consultations and chat with lawyers, enabling direct professional assistance. 
-Cases Repository: A centralized database allowing lawyers to efficiently find and accept cases that match their specific domain expertise. 
-"Flow": A user asks a complex question about property law in "Nepali English" and gets an instant, simplified citation from the Civil Code, followed by a recommendation for a top property lawyer nearby.
+```bash
+npm install
+```
 
-System Design / Architecture Overview
-Flow:
-User interacts with the Next.js Frontend.
-Auth is handled by Clerk (integrated with Convex).
-Real-time Data (Messages, Lawyer Profiles) flows via Convex Database.
-Complex Legal Queries are sent to the Python FastAPI Backend (hosted on Render/Local).
-AI Backend uses LangChain to retrieve docs from ChromaDB and generates answers via Google Gemini / Groq.
-System Design in Arch linux
+### 3. Set up the Python environment
 
-Key Features
-AI Legal Advisor: Instant answers using RAG on Nepali laws.
-Lawyer Marketplace: Verified directory with booking capabilities.
-Case Management: Specialized tools for lawyers to track consultations and documents.
-Court Information: Navigation and detailed info for courts across Nepal.
-Community Forum: A space for public legal discussions. (Coming soon)
-Why It's Better
-Constitution-Centric RAG: Utilizes Retrieval-Augmented Generation strictly anchored to the Constitution of Nepal, ensuring answers are grounded in actual legal text rather than generic hallucinations.
-Integrated Workflow: Seamlessly bridges the gap between information (AI legal guidance) and action (hiring Human Lawyers) in a single platform, supported by cloud-scale infrastructure.
-Modern Stack: Built on Convex for real-time reactivity and Next.js for high performance.
+```bash
+python3 -m venv .venv-1
+source .venv-1/bin/activate
+pip install -r backend/requirements.txt
+```
+
+### 4. Configure environment variables
+
+Create or update your environment file with the required API and service credentials:
+
+- GEMINI_API_KEY or GROQ_API_KEY
+- NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+- CLERK_SECRET_KEY
+- NEXT_PUBLIC_CONVEX_URL
+- CONVEX_DEPLOYMENT
+
+A sample environment file is already present as .env.local in the repository. Update it with your own values before running the app.
+
+### 5. Start the backend
+
+```bash
+cd backend
+HOST=127.0.0.1 PORT=8000 python main.py
+```
+
+### 6. Start the frontend
+
+In a new terminal:
+
+```bash
+cd /path/to/nyayak
+npm run dev
+```
+
+Then open:
+
+- http://localhost:3000
+- Backend health check: http://127.0.0.1:8000/health
+
+## API Endpoints
+
+- GET /health
+- POST /api/ask-legal
+
+## Roadmap
+
+- improve lawyer recommendation accuracy
+- expand legal document coverage
+- add richer forum and case-management workflows
+- improve multilingual legal query handling
+
+## Contributing
+
+Contributions are welcome. If you would like to improve the platform, please open an issue or submit a pull request.
+
+## Note
+
+This project is actively being developed and may evolve as the product and legal data workflows are refined.

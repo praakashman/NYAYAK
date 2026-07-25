@@ -9,3 +9,4 @@ PyPDF2
 python-multipart
 groq
 numpy
+rank-bm25
