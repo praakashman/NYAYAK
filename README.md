@@ -21,6 +21,20 @@ Nyayak is designed to make legal information more accessible, especially in a se
 - Real-time data and chat workflows powered by Convex
 - Modern web interface built with Next.js and Tailwind CSS
 
+## Project Preview
+
+Here are some representative screenshots that reflect the core experience of Nyayak:
+
+![Landing page](images/landing_page.png)
+
+![AI legal assistant](images/chatbot.png)
+
+![Lawyer dashboard](images/lawyer_dashboard.png)
+
+![Court information](images/courts.png)
+
+![Citizen dashboard](images/citizen_dashboard.png)
+
 ## Tech Stack
 
 ### Frontend
@@ -109,7 +123,6 @@ npm run dev
 Then open:
 
 - http://localhost:3000
-- Backend health check: http://127.0.0.1:8000/health
 
 ## API Endpoints
 
