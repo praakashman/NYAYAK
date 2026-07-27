@@ -65,7 +65,7 @@ export const getMyConsultations = query({
       .withIndex("by_user_status", (q) => q.eq("userId", user._id))
       .collect();
 
-    // Ideally, we'd also check if they are a lawyer and fetch those consultations too
+    // Ideally, we'd also check if they are a lawyer and  fetch those consultations too
     return userConsultations;
   },
 });
