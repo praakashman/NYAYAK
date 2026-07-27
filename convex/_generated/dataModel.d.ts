@@ -34,7 +34,7 @@ export type Doc<TableName extends TableNames> = DocumentByName<
 
 /**
  * An identifier for a document in Convex.
- *
+ * A real time database like Convex needs a way to uniquely identify documents. Each document in Convex has a unique `Id` that is used to reference it. This type is used to represent those identifiers in a type-safe way.
  * Convex documents are uniquely identified by their `Id`, which is accessible
  * on the `_id` field. To learn more, see [Document IDs](https://docs.convex.dev/using/document-ids).
  *

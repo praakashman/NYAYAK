@@ -20,7 +20,7 @@ import {
 
 /**
  * Define a query in this Convex app's public API.
- *
+ * 
  * This function will be allowed to read your Convex database and will be accessible from the client.
  *
  * @param func - The query function. It receives a {@link QueryCtx} as its first argument.
