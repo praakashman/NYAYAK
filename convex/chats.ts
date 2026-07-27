@@ -86,4 +86,4 @@ export const deleteSession = mutation({
         
         await ctx.db.delete(args.sessionId);
     }
-})
+});
