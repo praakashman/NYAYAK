@@ -13,7 +13,7 @@ export const request = mutation({
 
     const user = await ctx.db
       .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.tokenIdentifier))
       .unique();
 
     if (!user) throw new Error("User not found");
@@ -53,7 +53,7 @@ export const getMyConsultations = query({
 
     const user = await ctx.db
       .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.tokenIdentifier))
       .unique();
 
     if (!user) return [];
