@@ -33,7 +33,7 @@ Here are some representative screenshots that reflect the core experience of Nya
 
 ![Court information](images/courts.png)
 
-![Citizen dashboard](images/citizen_dashboard.png)
+
 
 ## Tech Stack
 
