@@ -1,3 +1,4 @@
+#implementation of a fast RAG pipeline with hybrid search (BM25 + optional embeddings)
 import os
 import json
 from typing import List, Dict

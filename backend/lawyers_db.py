@@ -1,3 +1,4 @@
+# Database of available lawyers
 from typing import Optional
 from models import Lawyer
 

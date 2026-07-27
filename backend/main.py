@@ -1,3 +1,4 @@
+#implementation of a FastAPI backend for RAG-powered legal consultation with LLM integration ( Groq)
 import os
 import logging
 from fastapi import FastAPI, HTTPException

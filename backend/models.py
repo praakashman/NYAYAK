@@ -1,3 +1,4 @@
+#implementation of a FastAPI backend for RAG-powered legal consultation with LLM integration ( Groq)
 from typing import List, Optional
 from pydantic import BaseModel
 
