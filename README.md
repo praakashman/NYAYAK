@@ -1,5 +1,7 @@
 # Nyayak
 
+Live site: https://nyayak.vercel.app
+
 Nyayak is a digital legal navigation platform built for Nepal. It combines AI-powered legal guidance, lawyer discovery, and legal resource exploration into a single experience for citizens and legal professionals.
 
 ## Overview
