@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Target files
+# Target files to process
 FILES=$(find ./src -type f \( -name "*.tsx" -o -name "*.ts" \))
 
 for file in $FILES; do
