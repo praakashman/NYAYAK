@@ -86,6 +86,6 @@ def find_best_lawyer(specialization: str) -> Optional[Lawyer]:
     if not matching:
         return None
     
-    # Sort by availability and rating
+    # Sort by availability and rating and return the best match
     matching.sort(key=lambda x: (not x.available_now, -x.rating))
     return matching[0]
