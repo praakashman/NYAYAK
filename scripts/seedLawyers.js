@@ -1,5 +1,5 @@
 // Seed script to populate Convex database with lawyer data
-// This file contains the lawyer data to be seeded via the /api/seed-lawyers endpoint
+// This file contains the lawyer data to be seeded via the /api/seed-lawyers endpoint..
 
 const LAWYERS_DATA = [
   {

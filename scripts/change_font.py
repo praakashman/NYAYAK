@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 
 filepath = "nyayak/src/app/layout.tsx"
