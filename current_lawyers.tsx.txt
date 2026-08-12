@@ -48,7 +48,7 @@ export default function FindLawyersPage() {
   const [viewMode, setViewMode] = useState<'Grid' | 'List'>('Grid');
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
   
-  // Search & Filters
+  // Search & Filter
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSpecialties, setActiveSpecialties] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
