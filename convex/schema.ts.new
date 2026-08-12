@@ -1,4 +1,4 @@
-  chat_sessions: defineTable({
+chat_sessions: defineTable({
     userId: v.id("users"),
     title: v.string(),
   }).index("by_userId", ["userId"]),

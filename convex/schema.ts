@@ -75,7 +75,7 @@ export default defineSchema({
   // To cache PageRank scores to avoid recalculating on every render
   forum_user_pagerank: defineTable({
     userId: v.id("users"),
-    score: v.number(),    // The calculated PageRank score
+    score: v.number(),    // The calculated PageRank score.
     rank: v.number(),     // 1st, 2nd, etc.
   }).index("by_userId", ["userId"])
     .index("by_score", ["score"]),

@@ -101,7 +101,7 @@ export const toggleAvailability = mutation({
   },
 });
 
-// Content-based recommendation system for lawyers
+// Content-based recommendation system for lawyers.
 export const recommend = query({
   args: {
     query: v.string(),

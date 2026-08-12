@@ -158,7 +158,7 @@ export const getCommentsAndTraverse = query({
   },
 });
 
-// 5. Upvote a Post or Comment
+// 5. Upvote a Post or Comment.
 export const toggleUpvote = mutation({
   args: {
     itemId: v.union(v.id("forum_posts"), v.id("forum_comments")),

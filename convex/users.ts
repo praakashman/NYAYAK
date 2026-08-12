@@ -329,7 +329,7 @@ export const updateLawyerProfile = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return null;
 
-    // Get user
+    // Get user data
     const user = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.tokenIdentifier))

@@ -20,7 +20,7 @@ const clerkWebhookHandler = httpAction(async (ctx, request) => {
     });
   } catch (err) {
     try {
-      // Log headers and a snippet of the payload to help diagnose signature mismatches.
+      // Log headers and a snippet of the payload to help diagnose signature mismatches..
       const headersObj = Object.fromEntries(headers.entries());
       console.error("Webhook verification failed:", err);
       console.error("Received headers:", headersObj);
