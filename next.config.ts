@@ -11,7 +11,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'img.clerk.com', // Often used with Clerk auth
+        hostname: 'img.clerk.com', // Often used with Clerk auth and user profile images
         pathname: '/**',
       },
     ],
