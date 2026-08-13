@@ -1,3 +1,4 @@
+// Type definitions for svix 1.0
 declare module "svix" {
   export type VerifyHeaders = { [key: string]: string };
 
