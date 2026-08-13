@@ -10,7 +10,7 @@ coverage/
 /.next/
 /out/
 
-# Production
+# Production #
 /build/
 
 # Misc
